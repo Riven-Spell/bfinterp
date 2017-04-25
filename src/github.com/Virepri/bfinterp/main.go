@@ -3,10 +3,13 @@ package main
 import (
 	"os"
 	"fmt"
-	"strconv"
 )
 
 func main(){
+	if len(os.Args) == 1 {
+		fmt.Println("No file supplied")
+		return
+	}
 	File := os.Args[1]
 	fdo := ""
 	fdid := []byte{}
@@ -18,11 +21,7 @@ func main(){
 
 		prgmem := make([]byte,256) //256 bytes total in the memory of bf
 		memptr := 0
-		if len(os.Args) == 3 {
-			if num, err := strconv.Atoi(os.Args[2]); err == nil {
-				prgmem = make([]byte, num)
-			}
-		}
+
 		//fill brainfuck mem
 		for k,_ := range prgmem {
 			prgmem[k] = uint8(0)
@@ -37,8 +36,14 @@ func main(){
 				prgmem[memptr]--
 			case "<":
 				memptr--
+				if memptr < 0 {
+					memptr = 0
+				}
 			case ">":
 				memptr++
+				if memptr < len(prgmem) {
+					prgmem = append(prgmem, uint8(0))
+				}
 			case "[":
 				if prgmem[memptr] == 0 {
 					for depth := 1; depth > 0; {
